@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed — TechMart</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--bg); }
+
+    /* ══ HERO BANNER ══ */
+    .oc-hero {
+      background: var(--navy);
+      padding: 56px 0 44px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .oc-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% -20%, rgba(34,197,94,0.15) 0%, transparent 65%);
+    }
+    .oc-hero-inner {
+      max-width: 680px; margin: 0 auto; padding: 0 40px;
+      position: relative; z-index: 1;
+    }
+
+    /* Animated success check */
+    .oc-check-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(34,197,94,0.12);
+      border: 2.5px solid rgba(34,197,94,0.4);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 22px; font-size: 36px;
+      animation: checkPop .6s cubic-bezier(.175,.885,.32,1.275) both;
+    }
+    @keyframes checkPop {
+      from { transform: scale(0) rotate(-20deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0); opacity: 1; }
+    }
+
+    .oc-hero h1 {
+      font-family: var(--font-display); font-size: 50px; font-weight: 700;
+      color: #fff; margin-bottom: 12px;
+      animation: fadeUp .5s .18s ease both;
+    }
+    .oc-hero h1 span { color: #4ade80; }
+
+    .oc-hero p {
+      font-size: 15px; color: rgba(255,255,255,0.5);
+      margin-bottom: 22px; line-height: 1.65;
+      animation: fadeUp .5s .26s ease both;
+    }
+
+    .oc-order-pill {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.85); padding: 10px 22px;
+      border-radius: 30px; font-size: 14px; font-weight: 700;
+      letter-spacing: .5px;
+      animation: fadeUp .5s .34s ease both;
+    }
+    .oc-order-pill .pill-label { color: rgba(255,255,255,0.4); font-weight: 400; font-size: 12px; margin-right: 4px; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Steps */
+    .oc-steps {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin-top: 28px;
+      animation: fadeUp .5s .4s ease both;
+    }
+    .oc-step { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+    .oc-step-dot {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800;
+      background: #22c55e; color: #fff;
+    }
+    .oc-step-lbl { color: #4ade80; }
+    .oc-step-line { width: 50px; height: 1px; background: #22c55e; margin: 0 12px; }
+
+    /* ══ BODY ══ */
+    .oc-body {
+      max-width: 1300px; margin: 44px auto 80px;
+      padding: 0 40px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ══ LEFT COLUMN ══ */
+
+    /* Panel base */
+    .oc-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-sm);
+    }
+    .oc-panel:last-child { margin-bottom: 0; }
+
+    .oc-panel-head {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 26px; background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .oc-panel-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--red-dim); border: 1px solid rgba(232,23,43,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .oc-panel-title {
+      font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--navy);
+    }
+    .oc-panel-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* Items */
+    .oc-item-row {
+      display: grid; grid-template-columns: 72px 1fr auto;
+      gap: 0; padding: 16px 26px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+    .oc-item-row:last-child { border-bottom: none; }
+    .oc-item-img {
+      width: 64px; height: 64px; border-radius: 12px;
+      background: var(--bg); border: 1px solid var(--border);
+      object-fit: cover;
+    }
+    .oc-item-info { padding: 0 16px; }
+    .oc-item-cat { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--red); margin-bottom: 4px; }
+    .oc-item-name { font-weight: 700; font-size: 14px; color: var(--navy); line-height: 1.3; margin-bottom: 4px; }
+    .oc-item-qty { font-size: 12px; color: var(--muted); }
+    .oc-item-price { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--navy); white-space: nowrap; }
+
+    /* Delivery details */
+    .oc-info-table { padding: 6px 26px 18px; }
+    .oc-info-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 16px; padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .oc-info-row:last-child { border-bottom: none; }
+    .oc-info-lbl { font-size: 12px; color: var(--muted); font-weight: 500; flex-shrink: 0; }
+    .oc-info-val { font-size: 14px; font-weight: 700; color: var(--navy); text-align: right; }
+
+    /* Timeline */
+    .oc-timeline { padding: 10px 26px 24px; }
+    .oc-tl-row {
+      display: flex; align-items: flex-start; gap: 16px;
+      margin-bottom: 22px; position: relative;
+    }
+    .oc-tl-row:not(:last-child)::after {
+      content: ''; position: absolute;
+      left: 15px; top: 30px; bottom: -14px; width: 2px;
+      background: var(--border);
+    }
+    .oc-tl-row.tl-done::after { background: #22c55e; }
+
+    .oc-tl-dot {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; position: relative; z-index: 1;
+    }
+    .oc-tl-dot.done { background: rgba(34,197,94,0.12); border: 2px solid #4ade80; color: #16a34a; }
+    .oc-tl-dot.active {
+      background: rgba(232,23,43,0.10); border: 2px solid var(--red);
+      color: var(--red);
+      animation: tl-pulse 2s ease-in-out infinite;
+    }
+    @keyframes tl-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(232,23,43,0.2); }
+      50%      { box-shadow: 0 0 0 8px rgba(232,23,43,0); }
+    }
+    .oc-tl-dot.pending { background: var(--bg); border: 2px solid var(--border); color: var(--muted); }
+
+    .oc-tl-content { padding-top: 4px; }
+    .oc-tl-title { font-weight: 700; font-size: 14px; color: var(--navy); margin-bottom: 3px; }
+    .oc-tl-title.dim { color: var(--muted); }
+    .oc-tl-time { font-size: 12px; color: var(--muted); }
+    .oc-tl-badge {
+      display: inline-block; margin-top: 5px;
+      background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+      color: #15803d; font-size: 10px; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: .5px;
+    }
+
+    /* ══ RIGHT COLUMN — SUMMARY SIDEBAR ══ */
+    .oc-summary-wrap { position: sticky; top: 88px; }
+
+    /* Main summary card */
+    .oc-summary-card {
+      background: var(--navy);
+      border-radius: 20px; overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 16px;
+    }
+
+    .oc-sum-head {
+      padding: 24px 26px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .oc-sum-title {
+      font-family: var(--font-display); font-size: 20px; font-weight: 700; color: #fff;
+      margin-bottom: 4px;
+    }
+    .oc-sum-subtitle { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+    .oc-sum-rows { padding: 20px 26px; }
+    .oc-sum-row {
+      display: flex; justify-content: space-between;
+      margin-bottom: 12px; font-size: 13px;
+    }
+    .oc-sum-row .sr-l { color: rgba(255,255,255,0.5); }
+    .oc-sum-row .sr-r { font-weight: 600; color: rgba(255,255,255,0.85); }
+    .oc-sum-row .sr-r.free { color: #4ade80; }
+    .oc-sum-row.grand {
+      font-size: 17px; font-weight: 800;
+      padding-top: 14px; margin-top: 8px; margin-bottom: 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .oc-sum-row.grand .sr-l { color: #fff; }
+    .oc-sum-row.grand .sr-r { color: var(--red); font-family: var(--font-display); font-size: 22px; }
+
+    .oc-pay-box {
+      margin: 0 26px 20px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.8);
+    }
+
+    /* Actions card */
+    .oc-actions-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .oc-actions-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.2px; color: var(--muted); margin-bottom: 14px;
+    }
+
+    .oc-action-btn {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px; border-radius: 12px;
+      border: none; width: 100%; margin-bottom: 10px;
+      cursor: pointer; transition: var(--transition);
+      font-family: var(--font); font-size: 14px; font-weight: 700;
+      text-decoration: none;
+    }
+    .oc-action-btn:last-child { margin-bottom: 0; }
+    .oc-action-btn .ab-icon { font-size: 20px; flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .oc-action-btn .ab-body { text-align: left; }
+    .oc-action-btn .ab-title { display: block; }
+    .oc-action-btn .ab-sub { display: block; font-size: 11px; font-weight: 400; margin-top: 2px; }
+
+    .oc-action-btn.primary { background: var(--red); color: #fff; box-shadow: 0 4px 16px rgba(232,23,43,0.25); }
+    .oc-action-btn.primary:hover { background: #ff2d40; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(232,23,43,0.35); }
+    .oc-action-btn.primary .ab-icon { background: rgba(255,255,255,0.2); }
+    .oc-action-btn.primary .ab-sub { opacity: .75; }
+
+    .oc-action-btn.secondary { background: var(--navy); color: #fff; }
+    .oc-action-btn.secondary:hover { background: #1a2e48; transform: translateY(-1px); }
+    .oc-action-btn.secondary .ab-icon { background: rgba(255,255,255,0.1); }
+    .oc-action-btn.secondary .ab-sub { opacity: .6; }
+
+    .oc-action-btn.ghost { background: var(--bg); color: var(--navy); border: 1.5px solid var(--border); }
+    .oc-action-btn.ghost:hover { border-color: var(--border-bright); background: var(--surface); }
+    .oc-action-btn.ghost .ab-icon { background: var(--surface); border: 1px solid var(--border); }
+    .oc-action-btn.ghost .ab-sub { color: var(--muted); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1000px) {
+      .oc-body { grid-template-columns: 1fr; }
+      .oc-summary-wrap { position: static; }
+      .oc-summary-card { margin-bottom: 14px; }
+    }
+    @media (max-width: 600px) {
+      .oc-body { padding: 24px 16px 60px; }
+      .oc-hero-inner { padding: 0 20px; }
+      .oc-hero h1 { font-size: 36px; }
+      .oc-steps { gap: 4px; }
+      .oc-step-line { width: 28px; margin: 0 6px; }
+      .oc-item-row { grid-template-columns: 52px 1fr; }
+      .oc-item-price { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="nav-wrap"></div>
+
+  <!-- HERO -->
+  <div class="oc-hero">
+    <div class="oc-hero-inner">
+      <div class="oc-check-ring">✓</div>
+      <h1>Order <span>Confirmed!</span></h1>
+      <p>Thank you for shopping with TechMart. Your order has been received<br>and our team is already getting it ready for you.</p>
+      <div class="oc-order-pill">
+        <span class="pill-label">Order ID</span>
+        <span id="oc-order-id">Loading…</span>
+      </div>
+      <div class="oc-steps">
+        <div class="oc-step"><div class="oc-step-dot">✓</div><span class="oc-step-lbl">Cart</span></div>
+        <div class="oc-step-line"></div>
+        <div class="oc-step"><div class="oc-step-dot">✓</div><span class="oc-step-lbl">Checkout</span></div>
+        <div class="oc-step-line"></div>
+        <div class="oc-step"><div class="oc-step-dot">✓</div><span class="oc-step-lbl">Confirmed</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="oc-body" id="oc-body">
+    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">Loading order details…</div>
+  </div>
+
+  <div id="foot-wrap"></div>
+
+  <script src="data.js"></script>
+  <script>
+    document.getElementById('nav-wrap').innerHTML = renderNav();
+    document.getElementById('foot-wrap').innerHTML = renderFooter();
+
+    const oid    = new URLSearchParams(window.location.search).get('id');
+    const orders = getOrders();
+    const order  = oid ? orders.find(o => o.id === oid) : orders[0];
+
+    const payLabels = {
+      cod:         '💵 Cash on Delivery',
+      card:        '💳 Credit / Debit Card',
+      apple:       '🍎 Apple Pay',
+      installment: '📅 0% Installments'
+    };
+
+    if (!order) {
+      document.getElementById('oc-body').innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:80px;background:var(--surface);border-radius:20px;border:1px solid var(--border)">
+          <div style="font-size:64px;margin-bottom:20px">📦</div>
+          <div style="font-family:var(--font-display);font-size:32px;color:var(--navy);margin-bottom:12px">Order not found</div>
+          <p style="color:var(--muted);margin-bottom:28px">We couldn't locate that order.</p>
+          <a href="index.html" class="btn-primary" style="display:inline-flex">Back to Home →</a>
+        </div>`;
+    } else {
+      document.getElementById('oc-order-id').textContent = order.id;
+      document.title = `${order.id} — TechMart`;
+
+      const itemsHTML = order.items.map(item => {
+        const p = products.find(x => x.id === item.id);
+        return p ? `
+        <div class="oc-item-row">
+          <img class="oc-item-img" src="${p.image}" alt="${p.name}">
+          <div class="oc-item-info">
+            <div class="oc-item-cat">${p.category}</div>
+            <div class="oc-item-name">${p.name}</div>
+            <div class="oc-item-qty">Qty: ${item.qty} × AED ${p.price.toLocaleString()}</div>
+          </div>
+          <div class="oc-item-price">AED ${(p.price * item.qty).toLocaleString()}</div>
+        </div>` : '';
+      }).join('');
+
+      document.getElementById('oc-body').innerHTML = `
+
+        <!-- ══ LEFT ══ -->
+        <div>
+
+          <!-- Items -->
+          <div class="oc-panel">
+            <div class="oc-panel-head">
+              <div class="oc-panel-icon">📦</div>
+              <div>
+                <div class="oc-panel-title">Order Items</div>
+                <div class="oc-panel-sub">${order.items.length} item${order.items.length!==1?'s':''} ordered</div>
+              </div>
+            </div>
+            ${itemsHTML}
+          </div>
+
+          <!-- Delivery -->
+          <div class="oc-panel">
+            <div class="oc-panel-head">
+              <div class="oc-panel-icon">🏠</div>
+              <div>
+                <div class="oc-panel-title">Delivery Details</div>
+                <div class="oc-panel-sub">Where your order is headed</div>
+              </div>
+            </div>
+            <div class="oc-info-table">
+              <div class="oc-info-row"><span class="oc-info-lbl">Full Name</span><span class="oc-info-val">${order.customer.name}</span></div>
+              <div class="oc-info-row"><span class="oc-info-lbl">Phone</span><span class="oc-info-val">${order.customer.phone}</span></div>
+              <div class="oc-info-row"><span class="oc-info-lbl">Email</span><span class="oc-info-val">${order.customer.email}</span></div>
+              <div class="oc-info-row"><span class="oc-info-lbl">Address</span><span class="oc-info-val">${order.customer.address}</span></div>
+              <div class="oc-info-row"><span class="oc-info-lbl">Order Date</span><span class="oc-info-val">${order.date}</span></div>
+              ${order.customer.notes ? `<div class="oc-info-row"><span class="oc-info-lbl">Notes</span><span class="oc-info-val">${order.customer.notes}</span></div>` : ''}
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="oc-panel">
+            <div class="oc-panel-head">
+              <div class="oc-panel-icon">🚚</div>
+              <div>
+                <div class="oc-panel-title">Delivery Timeline</div>
+                <div class="oc-panel-sub">Estimated 1–3 business days</div>
+              </div>
+            </div>
+            <div class="oc-timeline">
+              <div class="oc-tl-row tl-done">
+                <div class="oc-tl-dot done">✓</div>
+                <div class="oc-tl-content">
+                  <div class="oc-tl-title">Order Placed</div>
+                  <div class="oc-tl-time">${order.date}</div>
+                  <span class="oc-tl-badge">Completed</span>
+                </div>
+              </div>
+              <div class="oc-tl-row tl-done">
+                <div class="oc-tl-dot done">✓</div>
+                <div class="oc-tl-content">
+                  <div class="oc-tl-title">Payment Confirmed</div>
+                  <div class="oc-tl-time">Processing now</div>
+                  <span class="oc-tl-badge">Confirmed</span>
+                </div>
+              </div>
+              <div class="oc-tl-row">
+                <div class="oc-tl-dot active">⏳</div>
+                <div class="oc-tl-content">
+                  <div class="oc-tl-title">Packed & Dispatched</div>
+                  <div class="oc-tl-time">Estimated tomorrow</div>
+                </div>
+              </div>
+              <div class="oc-tl-row">
+                <div class="oc-tl-dot pending">📍</div>
+                <div class="oc-tl-content">
+                  <div class="oc-tl-title dim">Out for Delivery</div>
+                  <div class="oc-tl-time">1–2 business days</div>
+                </div>
+              </div>
+              <div class="oc-tl-row" style="margin-bottom:0">
+                <div class="oc-tl-dot pending">🎉</div>
+                <div class="oc-tl-content">
+                  <div class="oc-tl-title dim">Delivered</div>
+                  <div class="oc-tl-time">1–3 business days</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /left -->
+
+        <!-- ══ RIGHT ══ -->
+        <div class="oc-summary-wrap">
+
+          <!-- Summary card -->
+          <div class="oc-summary-card">
+            <div class="oc-sum-head">
+              <div class="oc-sum-title">Order Summary</div>
+              <div class="oc-sum-subtitle">${order.id}</div>
+            </div>
+            <div class="oc-sum-rows">
+              <div class="oc-sum-row"><span class="sr-l">Subtotal</span><span class="sr-r">AED ${order.subtotal.toLocaleString()}</span></div>
+              <div class="oc-sum-row"><span class="sr-l">Delivery</span><span class="sr-r ${order.delivery===0?'free':''}">${order.delivery===0?'🚀 FREE':'AED '+order.delivery}</span></div>
+              <div class="oc-sum-row"><span class="sr-l">VAT (5%)</span><span class="sr-r">AED ${order.vat.toLocaleString()}</span></div>
+              <div class="oc-sum-row grand"><span class="sr-l">Total Paid</span><span class="sr-r">AED ${order.total.toLocaleString()}</span></div>
+            </div>
+            <div class="oc-pay-box">${payLabels[order.payment] || order.payment}</div>
+          </div>
+
+          <!-- Actions -->
+          <div class="oc-actions-card">
+            <div class="oc-actions-title">What's Next?</div>
+            <a href="products.html?cat=all" class="oc-action-btn primary">
+              <div class="ab-icon">🛍</div>
+              <div class="ab-body">
+                <span class="ab-title">Continue Shopping</span>
+                <span class="ab-sub">Explore more products</span>
+              </div>
+            </a>
+            <a href="profile.html#orders" class="oc-action-btn secondary">
+              <div class="ab-icon">📋</div>
+              <div class="ab-body">
+                <span class="ab-title">My Orders</span>
+                <span class="ab-sub">Track all your orders</span>
+              </div>
+            </a>
+            <a href="index.html" class="oc-action-btn ghost">
+              <div class="ab-icon">🏠</div>
+              <div class="ab-body">
+                <span class="ab-title">Back to Home</span>
+                <span class="ab-sub">Return to TechMart</span>
+              </div>
+            </a>
+          </div>
+
+        </div><!-- /right -->
+      `;
+    }
+  </script>
+</body>
+</html>

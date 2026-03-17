@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — TechMart</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--bg); }
+
+    /* ══ SPLIT SHELL ══ */
+    .profile-shell {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: calc(100vh - 68px);
+      margin-top: 68px;
+    }
+
+    /* ══ LEFT SIDEBAR ══ */
+    .ps-sidebar {
+      background: var(--navy);
+      position: sticky;
+      top: 68px;
+      height: calc(100vh - 68px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ps-user-block {
+      padding: 40px 28px 28px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .ps-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--red) 0%, #ff6b35 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 30px; font-weight: 700;
+      color: #fff; margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(232,23,43,0.4);
+    }
+
+    .ps-name {
+      font-family: var(--font-display); font-size: 22px; font-weight: 700;
+      color: #fff; margin-bottom: 4px; line-height: 1.1;
+    }
+    .ps-email { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
+
+    .ps-stats {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .ps-stat {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 12px; padding: 14px 12px; text-align: center;
+    }
+    .ps-stat-num {
+      font-family: var(--font-display); font-size: 26px; font-weight: 700;
+      color: var(--red); line-height: 1;
+    }
+    .ps-stat-lbl { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: .8px; margin-top: 4px; font-weight: 600; }
+
+    /* ══ NAV ══ */
+    .ps-nav { padding: 20px 16px; flex: 1; }
+    .ps-nav-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.5px; color: rgba(255,255,255,0.25);
+      padding: 0 12px; margin-bottom: 8px; margin-top: 16px;
+    }
+    .ps-nav-label:first-child { margin-top: 0; }
+
+    .ps-nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      color: rgba(255,255,255,0.55);
+      cursor: pointer; transition: var(--transition);
+      border: none; background: none; width: 100%; text-align: left;
+      position: relative; margin-bottom: 2px;
+    }
+    .ps-nav-item .ni-icon { font-size: 18px; flex-shrink: 0; }
+    .ps-nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+    .ps-nav-item.active {
+      background: rgba(232,23,43,0.18);
+      color: #fff;
+      border: 1px solid rgba(232,23,43,0.3);
+    }
+    .ps-nav-item.active::before {
+      content: '';
+      position: absolute; left: 0; top: 20%; bottom: 20%;
+      width: 3px; background: var(--red);
+      border-radius: 0 3px 3px 0;
+    }
+    .ps-nav-badge {
+      margin-left: auto; background: var(--red); color: #fff;
+      font-size: 10px; font-weight: 800; padding: 2px 7px;
+      border-radius: 10px; min-width: 20px; text-align: center;
+    }
+
+    /* ══ BOTTOM OF SIDEBAR ══ */
+    .ps-sidebar-footer {
+      padding: 20px 16px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .ps-logout-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px; border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      color: rgba(255,255,255,0.4);
+      cursor: pointer; transition: var(--transition);
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .ps-logout-btn:hover { background: rgba(220,38,38,0.12); color: #f87171; }
+
+    /* ══ RIGHT CONTENT ══ */
+    .ps-content {
+      padding: 44px 48px;
+      overflow-y: auto;
+    }
+
+    .ps-panel { display: none; }
+    .ps-panel.active { display: block; }
+
+    /* ── Panel header ── */
+    .ps-panel-header {
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ps-panel-title {
+      font-family: var(--font-display); font-size: 36px; font-weight: 700;
+      color: var(--navy); margin-bottom: 6px;
+    }
+    .ps-panel-sub { font-size: 14px; color: var(--muted); }
+
+    /* ── Info tiles ── */
+    .info-tile-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 28px;
+    }
+    .info-tile {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 20px; transition: var(--transition);
+    }
+    .info-tile:hover { box-shadow: var(--shadow-md); border-color: var(--border-bright); }
+    .info-tile-lbl {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); margin-bottom: 6px;
+    }
+    .info-tile-val { font-size: 15px; font-weight: 700; color: var(--navy); }
+
+    /* ── Summary stats ── */
+    .summary-stat-row {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 32px;
+    }
+    .summary-stat {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px; text-align: center; transition: var(--transition);
+    }
+    .summary-stat:hover { box-shadow: var(--shadow-md); }
+    .ss-num {
+      font-family: var(--font-display); font-size: 38px; font-weight: 700;
+      color: var(--red); line-height: 1;
+    }
+    .ss-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-top: 6px; font-weight: 600; }
+
+    /* ── Recent orders preview ── */
+    .recent-orders-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--muted); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .recent-orders-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Order row ── */
+    .order-row {
+      display: grid; grid-template-columns: 60px 1fr auto auto;
+      gap: 16px; align-items: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 20px; margin-bottom: 12px;
+      cursor: pointer; transition: var(--transition);
+    }
+    .order-row:hover { border-color: rgba(232,23,43,0.25); box-shadow: var(--shadow-sm); transform: translateX(4px); }
+    .order-thumbs { display: flex; gap: -6px; }
+    .order-thumb {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      object-fit: cover; flex-shrink: 0;
+    }
+    .order-row-id { font-weight: 700; font-size: 14px; color: var(--navy); letter-spacing: .5px; }
+    .order-row-date { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .order-row-total {
+      font-family: var(--font-display); font-size: 22px;
+      font-weight: 700; color: var(--navy); white-space: nowrap;
+    }
+    .order-confirmed-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(22,163,74,0.10); border: 1px solid rgba(22,163,74,0.25);
+      color: #15803d; font-size: 11px; font-weight: 700;
+      padding: 5px 12px; border-radius: 20px; white-space: nowrap;
+    }
+    .order-row-arrow { color: var(--muted); font-size: 18px; }
+
+    /* ── Wishlist grid ── */
+    .wl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    /* ── Settings cards ── */
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .setting-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px; transition: var(--transition);
+    }
+    .setting-card:hover { box-shadow: var(--shadow-sm); }
+    .setting-card-icon { font-size: 28px; margin-bottom: 12px; }
+    .setting-card-title { font-weight: 700; font-size: 16px; color: var(--navy); margin-bottom: 6px; }
+    .setting-card-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
+    .setting-action-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 10px;
+      font-family: var(--font); font-size: 13px; font-weight: 700;
+      border: 1.5px solid var(--border-bright); background: none;
+      color: var(--text-secondary); cursor: pointer; transition: var(--transition);
+    }
+    .setting-action-btn:hover { border-color: var(--navy); color: var(--navy); background: var(--bg); }
+    .setting-action-btn.danger { color: #dc2626; border-color: rgba(220,38,38,0.3); }
+    .setting-action-btn.danger:hover { background: rgba(220,38,38,0.06); border-color: #dc2626; }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1000px) {
+      .profile-shell { grid-template-columns: 240px 1fr; }
+      .info-tile-grid { grid-template-columns: repeat(2, 1fr); }
+      .wl-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .profile-shell { grid-template-columns: 1fr; margin-top: 68px; }
+      .ps-sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; overflow: visible; }
+      .ps-user-block { flex: 1; min-width: 240px; }
+      .ps-nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 16px; }
+      .ps-nav-label { display: none; }
+      .ps-nav-item { width: auto; flex: 0 0 auto; padding: 8px 14px; font-size: 13px; margin-bottom: 0; }
+      .ps-sidebar-footer { padding: 12px 16px; }
+      .ps-content { padding: 28px 20px; }
+      .info-tile-grid { grid-template-columns: 1fr 1fr; }
+      .summary-stat-row { grid-template-columns: 1fr 1fr 1fr; }
+      .settings-grid { grid-template-columns: 1fr; }
+      .order-row { grid-template-columns: 1fr auto; }
+      .order-thumbs { display: none; }
+      .order-row-total { font-size: 18px; }
+    }
+    @media (max-width: 500px) {
+      .info-tile-grid { grid-template-columns: 1fr; }
+      .summary-stat-row { grid-template-columns: 1fr 1fr; }
+      .wl-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="nav-wrap"></div>
+
+  <div class="profile-shell" id="profile-shell">
+    <!-- Sidebar placeholder while JS renders -->
+    <div class="ps-sidebar" id="ps-sidebar">
+      <div style="padding:60px 28px;text-align:center;color:rgba(255,255,255,0.3)">Loading…</div>
+    </div>
+    <div class="ps-content" id="ps-content">
+      <div style="padding:60px;text-align:center;color:var(--muted)">Loading…</div>
+    </div>
+  </div>
+
+  <div id="foot-wrap"></div>
+
+  <script src="data.js"></script>
+  <script>
+    document.getElementById('nav-wrap').innerHTML = renderNav();
+    document.getElementById('foot-wrap').innerHTML = renderFooter();
+
+    const user = getUser();
+    if (!user) { window.location.href = 'login.html'; }
+
+    let activePanel = (location.hash.replace('#','') || 'account');
+
+    function render() {
+      const orders = getOrders();
+      const wl     = getWishlist();
+      const wlProds = products.filter(p => wl.includes(p.id));
+      const initial = (user.firstName || user.username || 'U')[0].toUpperCase();
+      const displayName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username;
+      const totalSpent  = orders.reduce((s,o) => s + (o.total || 0), 0);
+
+      /* ── SIDEBAR ── */
+      document.getElementById('ps-sidebar').innerHTML = `
+        <div class="ps-user-block">
+          <div class="ps-avatar">${initial}</div>
+          <div class="ps-name">${displayName}</div>
+          <div class="ps-email">${user.email || 'No email set'}</div>
+          <div class="ps-stats">
+            <div class="ps-stat">
+              <div class="ps-stat-num">${orders.length}</div>
+              <div class="ps-stat-lbl">Orders</div>
+            </div>
+            <div class="ps-stat">
+              <div class="ps-stat-num">${wl.length}</div>
+              <div class="ps-stat-lbl">Saved</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ps-nav">
+          <div class="ps-nav-label">Account</div>
+          ${navItem('account', '👤', 'My Account')}
+          ${navItem('orders',  '📦', 'Orders', orders.length)}
+          ${navItem('wishlist','❤️', 'Wishlist', wl.length)}
+
+          <div class="ps-nav-label">Manage</div>
+          ${navItem('settings','⚙️', 'Settings')}
+        </div>
+
+        <div class="ps-sidebar-footer">
+          <button class="ps-logout-btn" onclick="logout()">
+            <span>🚪</span> Sign Out
+          </button>
+        </div>`;
+
+      /* ── PANELS ── */
+      const ordersHTML = buildOrdersHTML(orders);
+      const wishHTML   = wlProds.length === 0
+        ? `<div style="text-align:center;padding:60px 20px">
+             <div style="font-size:56px;margin-bottom:16px">🤍</div>
+             <div style="font-family:var(--font-display);font-size:26px;color:var(--navy);margin-bottom:10px">Wishlist is empty</div>
+             <p style="color:var(--muted);margin-bottom:24px">Tap ♡ on any product to save it here</p>
+             <a href="products.html?cat=all" class="btn-primary">Explore Products →</a>
+           </div>`
+        : `<div class="wl-grid">${wlProds.map(p => productCard(p)).join('')}</div>`;
+
+      document.getElementById('ps-content').innerHTML = `
+        <!-- ACCOUNT -->
+        <div class="ps-panel ${activePanel==='account'?'active':''}" id="panel-account">
+          <div class="ps-panel-header">
+            <div class="ps-panel-title">My Account</div>
+            <div class="ps-panel-sub">Your personal information and activity summary</div>
+          </div>
+
+          <div class="summary-stat-row">
+            <div class="summary-stat">
+              <div class="ss-num">${orders.length}</div>
+              <div class="ss-lbl">Total Orders</div>
+            </div>
+            <div class="summary-stat">
+              <div class="ss-num">${wl.length}</div>
+              <div class="ss-lbl">Wishlist</div>
+            </div>
+            <div class="summary-stat">
+              <div class="ss-num">AED ${totalSpent.toLocaleString()}</div>
+              <div class="ss-lbl">Total Spent</div>
+            </div>
+          </div>
+
+          <div class="info-tile-grid">
+            ${tile('First Name',   user.firstName  || '—')}
+            ${tile('Last Name',    user.lastName   || '—')}
+            ${tile('Username',     '@' + user.username)}
+            ${tile('Email',        user.email      || '—')}
+            ${tile('Phone',        user.phone      || '—')}
+            ${tile('Member Since', user.joinDate   || '2025')}
+          </div>
+
+          ${orders.length > 0 ? `
+          <div class="recent-orders-title">Recent Orders</div>
+          ${orders.slice(0,3).map(o => buildOrderRow(o)).join('')}
+          <div style="margin-top:14px">
+            <button onclick="switchPanel('orders')" style="background:none;border:none;color:var(--red);font-size:14px;font-weight:700;cursor:pointer;padding:0">View all orders →</button>
+          </div>` : ''}
+        </div>
+
+        <!-- ORDERS -->
+        <div class="ps-panel ${activePanel==='orders'?'active':''}" id="panel-orders">
+          <div class="ps-panel-header">
+            <div class="ps-panel-title">Order History</div>
+            <div class="ps-panel-sub">${orders.length} order${orders.length!==1?'s':''} placed</div>
+          </div>
+          ${ordersHTML}
+        </div>
+
+        <!-- WISHLIST -->
+        <div class="ps-panel ${activePanel==='wishlist'?'active':''}" id="panel-wishlist">
+          <div class="ps-panel-header">
+            <div class="ps-panel-title">My Wishlist</div>
+            <div class="ps-panel-sub">${wl.length} saved item${wl.length!==1?'s':''}</div>
+          </div>
+          ${wishHTML}
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="ps-panel ${activePanel==='settings'?'active':''}" id="panel-settings">
+          <div class="ps-panel-header">
+            <div class="ps-panel-title">Settings</div>
+            <div class="ps-panel-sub">Manage your account preferences</div>
+          </div>
+          <div class="settings-grid">
+            <div class="setting-card">
+              <div class="setting-card-icon">🔐</div>
+              <div class="setting-card-title">Security</div>
+              <div class="setting-card-desc">Update your password and login preferences to keep your account secure.</div>
+              <button class="setting-action-btn" onclick="toast('Coming soon!')">🔑 Change Password</button>
+            </div>
+            <div class="setting-card">
+              <div class="setting-card-icon">🔔</div>
+              <div class="setting-card-title">Notifications</div>
+              <div class="setting-card-desc">Choose what order updates, deals and announcements you receive.</div>
+              <button class="setting-action-btn" onclick="toast('Coming soon!')">✉️ Email Preferences</button>
+            </div>
+            <div class="setting-card">
+              <div class="setting-card-icon">📦</div>
+              <div class="setting-card-title">Order History</div>
+              <div class="setting-card-desc">You have ${orders.length} order${orders.length!==1?'s':''} on record. Clear history if needed.</div>
+              <button class="setting-action-btn danger" onclick="clearOrders()">🗑 Clear All Orders</button>
+            </div>
+            <div class="setting-card">
+              <div class="setting-card-icon">🚪</div>
+              <div class="setting-card-title">Sign Out</div>
+              <div class="setting-card-desc">Currently signed in as <strong>${user.username}</strong>. Signing out clears your session.</div>
+              <button class="setting-action-btn danger" onclick="logout()">🚪 Sign Out</button>
+            </div>
+          </div>
+        </div>`;
+
+      // Highlight correct nav item
+      document.querySelectorAll('.ps-nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.panel === activePanel);
+      });
+    }
+
+    function navItem(id, icon, label, count) {
+      const badge = count ? `<span class="ps-nav-badge">${count}</span>` : '';
+      return `<button class="ps-nav-item ${activePanel===id?'active':''}" data-panel="${id}" onclick="switchPanel('${id}')">
+        <span class="ni-icon">${icon}</span>${label}${badge}
+      </button>`;
+    }
+
+    function tile(label, value) {
+      return `<div class="info-tile"><div class="info-tile-lbl">${label}</div><div class="info-tile-val">${value}</div></div>`;
+    }
+
+    function buildOrderRow(o) {
+      const thumbs = o.items.slice(0,3).map(item => {
+        const p = products.find(x => x.id === item.id);
+        return p ? `<img class="order-thumb" src="${p.image}" alt="">` : '';
+      }).join('');
+      return `
+      <div class="order-row" onclick="location.href='order.html?id=${o.id}'">
+        <div class="order-thumbs">${thumbs}</div>
+        <div>
+          <div class="order-row-id">${o.id}</div>
+          <div class="order-row-date">${o.date} · ${o.items.length} item${o.items.length!==1?'s':''}</div>
+        </div>
+        <div class="order-row-total">AED ${o.total.toLocaleString()}</div>
+        <span class="order-confirmed-badge">✓ Confirmed</span>
+      </div>`;
+    }
+
+    function buildOrdersHTML(orders) {
+      if (orders.length === 0) return `
+        <div style="text-align:center;padding:60px 20px;background:var(--surface);border-radius:18px;border:1px solid var(--border)">
+          <div style="font-size:56px;margin-bottom:16px">📦</div>
+          <div style="font-family:var(--font-display);font-size:26px;color:var(--navy);margin-bottom:10px">No orders yet</div>
+          <p style="color:var(--muted);margin-bottom:24px">Start shopping to see your orders here</p>
+          <a href="products.html?cat=all" class="btn-primary">Shop Now →</a>
+        </div>`;
+      return orders.slice().reverse().map(o => buildOrderRow(o)).join('');
+    }
+
+    function switchPanel(name) {
+      activePanel = name;
+      location.hash = name;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('guestMode');
+      toast('See you soon! 👋');
+      setTimeout(() => window.location.href = 'splash.html', 700);
+    }
+
+    function clearOrders() {
+      if (confirm('Clear all order history? This cannot be undone.')) {
+        saveOrders([]); render(); toast('Order history cleared');
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>

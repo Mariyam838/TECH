@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — TechMart</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav-wrap"></div>
+
+  <!-- PAGE HEADER -->
+  <div class="products-page-header">
+    <div class="container" style="position:relative;z-index:2">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">
+        <a href="index.html" style="color:var(--red)">Home</a>
+        <span style="margin:0 8px;opacity:.4">›</span>
+        <span id="bc-cat">All Products</span>
+      </div>
+      <h1 id="page-heading" style="font-family:var(--font-display);font-size:52px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px">All Products</h1>
+      <p style="color:var(--muted);font-size:15px;font-weight:300">Find your perfect device from our curated collection</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="products-layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="filter-heading">
+          Filters
+          <button class="filter-clear" onclick="clearAll()">Clear All</button>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">Category</div>
+          <label class="filter-option"><input type="radio" name="cat" value="all" checked> <label>All Products</label></label>
+          <label class="filter-option"><input type="radio" name="cat" value="phones"> <label>📱 Phones</label></label>
+          <label class="filter-option"><input type="radio" name="cat" value="laptops"> <label>💻 Laptops</label></label>
+          <label class="filter-option"><input type="radio" name="cat" value="tvs"> <label>📺 TVs</label></label>
+          <label class="filter-option"><input type="radio" name="cat" value="accessories"> <label>🎧 Accessories</label></label>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">Max Price</div>
+          <div class="price-display">AED 100 — <strong id="price-lbl">AED 13,000</strong></div>
+          <input type="range" id="price-slider" min="100" max="13000" value="13000" step="100" oninput="updatePrice()">
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-label">Sort By</div>
+          <select class="sort-select" id="sort" style="width:100%">
+            <option value="default">Featured</option>
+            <option value="low">Price: Low → High</option>
+            <option value="high">Price: High → Low</option>
+            <option value="az">Name A → Z</option>
+          </select>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div>
+        <div class="sort-bar">
+          <div class="results-count" id="count">Showing <strong>16</strong> products</div>
+          <select class="sort-select" id="sort-mobile" style="display:none" onchange="document.getElementById('sort').value=this.value;renderGrid()">
+            <option value="default">Featured</option>
+            <option value="low">Price: Low → High</option>
+            <option value="high">Price: High → Low</option>
+          </select>
+        </div>
+        <div class="products-grid-4" id="grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="foot-wrap"></div>
+
+  <script src="data.js"></script>
+  <script>
+    document.getElementById('nav-wrap').innerHTML = renderNav('products');
+    document.getElementById('foot-wrap').innerHTML = renderFooter();
+
+    const params = new URLSearchParams(window.location.search);
+    let urlCat = params.get('cat') || 'all';
+    const urlQ = params.get('q') || '';
+
+    // Set radio
+    const r = document.querySelector(`input[name=cat][value="${urlCat}"]`);
+    if (r) r.checked = true;
+
+    if (urlQ) {
+      document.getElementById('page-heading').textContent = `Search: "${urlQ}"`;
+      document.getElementById('bc-cat').textContent = `Search`;
+      const si = document.getElementById('nav-search');
+      if (si) si.value = urlQ;
+    } else if (urlCat !== 'all') {
+      const labels = { phones:'📱 Phones', laptops:'💻 Laptops', tvs:'📺 TVs', accessories:'🎧 Accessories' };
+      document.getElementById('page-heading').textContent = labels[urlCat] || 'Products';
+      document.getElementById('bc-cat').textContent = labels[urlCat] || 'Products';
+    }
+
+    function updatePrice() {
+      const v = +document.getElementById('price-slider').value;
+      document.getElementById('price-lbl').textContent = 'AED ' + v.toLocaleString();
+      renderGrid();
+    }
+
+    function clearAll() {
+      document.querySelector('input[name=cat][value="all"]').checked = true;
+      document.getElementById('price-slider').value = 13000;
+      document.getElementById('price-lbl').textContent = 'AED 13,000';
+      document.getElementById('sort').value = 'default';
+      renderGrid();
+    }
+
+    document.querySelectorAll('input[name=cat]').forEach(r => r.addEventListener('change', renderGrid));
+    document.getElementById('sort').addEventListener('change', renderGrid);
+    document.getElementById('price-slider').addEventListener('input', renderGrid);
+
+    function renderGrid() {
+      let list = [...products];
+      const cat = document.querySelector('input[name=cat]:checked')?.value || 'all';
+      const max = +document.getElementById('price-slider').value;
+      const sort = document.getElementById('sort').value;
+
+      if (urlQ) list = list.filter(p =>
+        p.name.toLowerCase().includes(urlQ.toLowerCase()) ||
+        p.category.toLowerCase().includes(urlQ.toLowerCase()) ||
+        p.desc.toLowerCase().includes(urlQ.toLowerCase())
+      );
+
+      if (cat !== 'all') list = list.filter(p => p.category === cat);
+      list = list.filter(p => p.price <= max);
+
+      if (sort === 'low') list.sort((a,b) => a.price - b.price);
+      else if (sort === 'high') list.sort((a,b) => b.price - a.price);
+      else if (sort === 'az') list.sort((a,b) => a.name.localeCompare(b.name));
+
+      document.getElementById('count').innerHTML = `Showing <strong>${list.length}</strong> products`;
+
+      const grid = document.getElementById('grid');
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+          <div class="empty-icon">🔍</div>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or search term</p>
+        </div>`;
+      } else {
+        grid.innerHTML = list.map(p => productCard(p)).join('');
+      }
+    }
+
+    renderGrid();
+  </script>
+</body>
+</html>

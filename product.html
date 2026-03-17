@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product — TechMart</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .trust-strip {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 18px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-top: 28px;
+    }
+    .trust-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+    .trust-item strong { color: var(--white); font-weight: 600; }
+
+    .related-section { padding: 80px 0; }
+  </style>
+</head>
+<body>
+  <div id="nav-wrap"></div>
+
+  <div class="container page-wrap">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:32px">
+      <a href="index.html" style="color:var(--red)">Home</a>
+      <span style="margin:0 8px;opacity:.4">›</span>
+      <a href="products.html?cat=all" style="color:var(--red)">Products</a>
+      <span style="margin:0 8px;opacity:.4">›</span>
+      <span id="bc"></span>
+    </div>
+
+    <div id="product-main"></div>
+  </div>
+
+  <section class="related-section" style="background:var(--surface);border-top:1px solid var(--border)">
+    <div class="container">
+      <div class="section-header" style="margin-bottom:40px">
+        <div class="section-header-text">
+          <div class="section-eyebrow">You May Also Like</div>
+          <h2 class="section-title">Related <span class="dim">Products</span></h2>
+        </div>
+      </div>
+      <div class="products-grid-4" id="related"></div>
+    </div>
+  </section>
+
+  <div id="foot-wrap"></div>
+
+  <script src="data.js"></script>
+  <script>
+    document.getElementById('nav-wrap').innerHTML = renderNav('products');
+    document.getElementById('foot-wrap').innerHTML = renderFooter();
+
+    const id = +new URLSearchParams(window.location.search).get('id');
+    const p = products.find(x => x.id === id);
+
+    if (!p) {
+      document.getElementById('product-main').innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><h3>Product not found</h3><p>This product doesn't exist.</p><a href="index.html" class="btn-primary">Back to Home</a></div>`;
+    } else {
+      document.title = `${p.name} — TechMart`;
+      document.getElementById('bc').textContent = p.name;
+
+      const wl = getWishlist();
+      const liked = wl.includes(p.id);
+
+      const specMap = {
+        phones: [['Category','Smartphone'],['Platform','iOS / Android'],['Availability','✅ In Stock'],['Warranty','1 Year Official'],['Return','30 Days'],['Delivery','Free UAE-wide']],
+        laptops: [['Category','Laptop'],['Form Factor','Portable Computer'],['Availability','✅ In Stock'],['Warranty','1 Year Official'],['Return','30 Days'],['Delivery','Free UAE-wide']],
+        tvs: [['Category','Television'],['Resolution','4K Ultra HD'],['Availability','✅ In Stock'],['Warranty','1 Year Official'],['Return','30 Days'],['Installation','Free Setup']],
+        accessories: [['Category','Accessory'],['Compatibility','Universal / Apple'],['Availability','✅ In Stock'],['Warranty','1 Year Official'],['Return','30 Days'],['Delivery','Free UAE-wide']],
+      };
+
+      const specs = specMap[p.category] || specMap.phones;
+      const specRows = specs.map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('');
+
+      document.getElementById('product-main').innerHTML = `
+        <div class="product-detail-layout">
+          <div class="product-detail-img-card">
+            <img class="product-detail-img" src="${p.image}" alt="${p.name}">
+            <div style="padding:20px 24px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap">
+              ${p.badge ? `<span class="product-badge ${p.badge==='HOT'?'hot':p.badge==='NEW'?'new':'sale'}" style="position:static">${p.badge}</span>` : ''}
+              <span style="background:rgba(0,179,65,0.15);border:1px solid rgba(0,179,65,0.3);color:#4ade80;padding:3px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.8px">IN STOCK</span>
+              <span style="background:rgba(0,0,0,0.05);border:1px solid var(--border-bright);color:var(--muted);padding:3px 12px;border-radius:6px;font-size:11px;font-weight:600">🔒 GENUINE</span>
+            </div>
+          </div>
+
+          <div class="product-detail-info">
+            <div class="product-detail-tag">${p.category}</div>
+            <div class="product-detail-name">${p.name}</div>
+            <p class="product-detail-desc">${p.desc}</p>
+
+            <div class="product-detail-price-block">
+              <div class="product-detail-price">AED ${p.price.toLocaleString()} <sub>incl. VAT</sub></div>
+              <div class="product-detail-price-note">Free delivery · Official warranty · 30-day returns</div>
+            </div>
+
+            <div class="qty-large">
+              <span class="qty-label-lg">Quantity</span>
+              <div class="qty-ctrl-lg">
+                <button class="qbtn-lg" onclick="chgQty(-1)">−</button>
+                <input type="number" class="qnum-lg" id="qty" value="1" min="1" max="10" readonly>
+                <button class="qbtn-lg" onclick="chgQty(1)">+</button>
+              </div>
+            </div>
+
+            <div class="detail-btns">
+              <button class="btn-detail-main" onclick="addQty()">🛒 Add to Cart</button>
+              <button class="btn-detail-buy" onclick="addQty();window.location.href='cart.html'">⚡ Buy Now</button>
+              <button class="btn-detail-wish ${liked?'active':''}" id="wl-btn" onclick="toggleWishlist(${p.id},document.getElementById('wl-btn'))">${liked?'♥':'♡'}</button>
+            </div>
+
+            <div class="trust-strip">
+              <div class="trust-item">🚚 <strong>Free Delivery</strong></div>
+              <div class="trust-item">🔄 <strong>30-Day Returns</strong></div>
+              <div class="trust-item">🔒 <strong>Secure Payment</strong></div>
+              <div class="trust-item">✅ <strong>Official Warranty</strong></div>
+              <div class="trust-item">📦 <strong>Original Packaging</strong></div>
+            </div>
+
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-top:24px">
+              <div style="font-weight:700;font-size:15px;margin-bottom:16px">Quick Specs</div>
+              <table class="specs-table">${specRows}</table>
+            </div>
+          </div>
+        </div>`;
+
+      // Related
+      const rel = products.filter(x => x.category === p.category && x.id !== p.id).slice(0,4);
+      document.getElementById('related').innerHTML = rel.map(x => productCard(x)).join('');
+    }
+
+    function chgQty(d) {
+      const el = document.getElementById('qty');
+      el.value = Math.max(1, Math.min(10, +el.value + d));
+    }
+
+    function addQty() {
+      const qty = +document.getElementById('qty').value;
+      for (let i = 0; i < qty; i++) addToCart(p.id);
+    }
+  </script>
+</body>
+</html>

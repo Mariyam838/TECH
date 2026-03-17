@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — TechMart</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .strength-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+    .strength-fill { height: 100%; border-radius: 2px; transition: width .3s, background .3s; width: 0%; }
+  </style>
+</head>
+<body style="padding-top:0">
+  <div id="nav-wrap"></div>
+
+  <div class="auth-wrap" style="min-height:100vh">
+    <div class="auth-visual">
+      <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=1200&q=80" alt="Tech">
+      <div class="auth-visual-overlay">
+        <div class="auth-visual-text">
+          <h2>Join the<br>TechMart<br>Family.</h2>
+          <p>50,000+ happy customers<br>across the UAE trust us.</p>
+        </div>
+      </div>
+    </div>
+    <div class="auth-form-side" style="padding:40px 60px;overflow-y:auto">
+      <div class="auth-form-box" style="max-width:460px">
+        <a href="index.html" class="auth-logo-sm">TECH<em>MART</em></a>
+        <div class="auth-title">Create Account 🚀</div>
+        <p class="auth-sub">Join and unlock exclusive deals, order tracking and more</p>
+
+        <div id="success-msg" style="background:rgba(0,179,65,0.1);border:1px solid rgba(0,179,65,.3);color:#4ade80;padding:12px 16px;border-radius:8px;font-size:14px;font-weight:600;margin-bottom:20px;display:none">✅ Account created! Redirecting...</div>
+
+        <div class="form-row-2">
+          <div class="form-group" id="fg-fn"><label>First Name</label><input id="fn" placeholder="Ahmed"><div class="form-error">Required</div></div>
+          <div class="form-group" id="fg-ln"><label>Last Name</label><input id="ln" placeholder="Al Rashid"><div class="form-error">Required</div></div>
+        </div>
+
+        <div class="form-group" id="fg-un">
+          <label>Username</label>
+          <input id="un" placeholder="ahmed123" oninput="checkUn()">
+          <div class="form-error" id="un-err">Required</div>
+        </div>
+
+        <div class="form-group" id="fg-em"><label>Email</label><input type="email" id="em" placeholder="you@email.com"><div class="form-error">Enter valid email</div></div>
+        <div class="form-group" id="fg-ph"><label>Phone</label><input type="tel" id="ph" placeholder="+971 50 000 0000"><div class="form-error">Required</div></div>
+
+        <div class="form-group" id="fg-pw">
+          <label>Password</label>
+          <input type="password" id="pw" placeholder="Min 6 characters" oninput="checkStrength()">
+          <div class="strength-bar"><div class="strength-fill" id="sf"></div></div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px" id="slbl">Enter a password</div>
+          <div class="form-error">Min 6 characters</div>
+        </div>
+
+        <div class="form-group" id="fg-cp"><label>Confirm Password</label><input type="password" id="cp" placeholder="Repeat password"><div class="form-error">Passwords don't match</div></div>
+
+        <button class="btn-primary" style="width:100%;justify-content:center;font-size:16px;padding:15px;margin-top:4px" onclick="doSignup()">Create Account →</button>
+
+        <div class="auth-switch">Already have an account? <a href="login.html">Sign in →</a></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+    document.getElementById('nav-wrap').innerHTML = renderNav();
+    if (getUser()) window.location.href = 'profile.html';
+
+    function checkStrength() {
+      const pw = document.getElementById('pw').value;
+      const s = pw.length >= 10 && /[A-Z]/.test(pw) && /[0-9]/.test(pw) ? 3 : pw.length >= 6 ? 2 : pw.length > 0 ? 1 : 0;
+      const map = [{w:'0%',bg:'transparent',t:'Enter a password'},{w:'33%',bg:'#e53e3e',t:'⚠️ Weak'},{w:'66%',bg:'#dd6b20',t:'🔶 Medium'},{w:'100%',bg:'#38a169',t:'✅ Strong'}];
+      document.getElementById('sf').style.width = map[s].w;
+      document.getElementById('sf').style.background = map[s].bg;
+      document.getElementById('slbl').textContent = map[s].t;
+    }
+
+    function checkUn() {
+      const v = document.getElementById('un').value.trim();
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const fg = document.getElementById('fg-un');
+      if (v && users.find(u => u.username === v)) { fg.classList.add('has-error'); document.getElementById('un-err').textContent = 'Username taken'; }
+      else fg.classList.remove('has-error');
+    }
+
+    function se(id, msg) {
+      const fg = document.getElementById('fg-'+id);
+      if (msg) { fg.classList.add('has-error'); const e = fg.querySelector('.form-error'); if (e) e.textContent = msg; }
+      else fg.classList.remove('has-error');
+    }
+
+    function doSignup() {
+      const fn=document.getElementById('fn').value.trim(), ln=document.getElementById('ln').value.trim();
+      const un=document.getElementById('un').value.trim(), em=document.getElementById('em').value.trim();
+      const ph=document.getElementById('ph').value.trim(), pw=document.getElementById('pw').value;
+      const cp=document.getElementById('cp').value;
+      let ok=true;
+      if (!fn) { se('fn','Required'); ok=false; } else se('fn','');
+      if (!ln) { se('ln','Required'); ok=false; } else se('ln','');
+      if (!un) { se('un','Required'); ok=false; } else se('un','');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { se('em','Valid email required'); ok=false; } else se('em','');
+      if (!ph) { se('ph','Required'); ok=false; } else se('ph','');
+      if (pw.length < 6) { se('pw','Min 6 characters'); ok=false; } else se('pw','');
+      if (pw !== cp) { se('cp',"Passwords don't match"); ok=false; } else se('cp','');
+      if (!ok) return;
+
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.find(u => u.username === un)) { se('un','Username already taken'); return; }
+
+      const user = { username:un, email:em, phone:ph, firstName:fn, lastName:ln, password:pw, joinDate:new Date().toLocaleDateString('en-AE') };
+      users.push(user);
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      document.getElementById('success-msg').style.display = 'block';
+      setTimeout(() => window.location.href = 'index.html', 1200);
+    }
+  </script>
+</body>
+</html>

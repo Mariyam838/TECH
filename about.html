@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us — TechMart</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .story-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .story-img-stack {
+      position: relative;
+    }
+
+    .story-img-main {
+      width: 100%;
+      border-radius: 20px;
+      height: 500px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .story-img-sub {
+      position: absolute;
+      bottom: -24px;
+      right: -24px;
+      width: 220px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 4px solid var(--surface);
+    }
+
+    .story-year-badge {
+      position: absolute;
+      top: 24px;
+      left: -16px;
+      background: var(--red);
+      color: #fff;
+      padding: 16px 20px;
+      border-radius: 14px;
+      text-align: center;
+      box-shadow: var(--red-glow);
+    }
+
+    .story-year-badge .yr { font-family: var(--font-display); font-size: 34px; font-weight: 700; line-height: 1; }
+    .story-year-badge .yl { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; opacity: .85; margin-top: 2px; }
+
+    .story-text .section-eyebrow { margin-bottom: 14px; }
+
+    .story-text h2 {
+      font-family: var(--font-display);
+      font-size: 50px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.5px;
+      margin-bottom: 20px;
+    }
+
+    .story-text p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 16px;
+      font-weight: 300;
+    }
+
+    .story-highlights { display: flex; gap: 30px; margin-top: 36px; flex-wrap: wrap; }
+
+    .story-highlight {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 600;
+      color: var(--text);
+    }
+
+    .story-highlight .sh-dot {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .mission-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mission-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+    }
+
+    .mission-item {
+      padding: 60px 50px;
+      border-right: 1px solid var(--border);
+      transition: background .2s;
+    }
+
+    .mission-item:last-child { border-right: none; }
+    .mission-item:hover { background: var(--bg); }
+
+    .mission-icon { font-size: 40px; margin-bottom: 20px; }
+    .mission-title { font-family: var(--font-display); font-size: 24px; font-weight: 700; margin-bottom: 14px; }
+    .mission-text { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 300; }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 40px; }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 14px; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--red), transparent);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 44px;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -34px; top: 4px;
+      width: 16px; height: 16px;
+      background: var(--red);
+      border-radius: 50%;
+      border: 3px solid var(--surface);
+      box-shadow: 0 0 12px rgba(255,26,46,0.5);
+    }
+
+    .timeline-year {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--red);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+    }
+
+    .timeline-title { font-weight: 700; font-size: 18px; margin-bottom: 6px; }
+    .timeline-desc { font-size: 14px; color: var(--muted); font-weight: 300; line-height: 1.6; }
+
+    /* CTA */
+    .about-cta {
+      background: linear-gradient(135deg, rgba(255,26,46,0.12), rgba(255,26,46,0.04));
+      border: 1px solid rgba(255,26,46,0.2);
+      border-radius: 24px;
+      padding: 70px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-cta::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse, rgba(255,26,46,0.08), transparent);
+    }
+
+    .about-cta h2 { font-family: var(--font-display); font-size: 52px; font-weight: 700; margin-bottom: 14px; position: relative; }
+    .about-cta p { font-size: 17px; color: var(--muted); margin-bottom: 36px; font-weight: 300; position: relative; }
+    .about-cta .btns { display: flex; gap: 16px; justify-content: center; position: relative; }
+
+    @media (max-width: 900px) {
+      .story-layout { grid-template-columns: 1fr; gap: 60px; }
+      .story-img-sub { display: none; }
+      .mission-inner { grid-template-columns: 1fr; }
+      .mission-item { border-right: none; border-bottom: 1px solid var(--border); padding: 40px 30px; }
+      .about-cta { padding: 50px 30px; }
+      .about-cta h2 { font-size: 36px; }
+    }
+
+    @media (max-width: 600px) {
+      .about-cta .btns { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="nav-wrap"></div>
+
+  <!-- HERO -->
+  <div class="about-hero">
+    <div class="about-hero-bg"></div>
+    <div class="about-hero-glow"></div>
+    <div class="container" style="position:relative;z-index:2">
+      <div class="section-eyebrow">Our Story</div>
+      <h1 style="font-family:var(--font-display);font-size:72px;font-weight:700;letter-spacing:-2px;line-height:.95;margin-bottom:20px">
+        We Are<br><span style="color:var(--red)">TechMart</span>
+      </h1>
+      <p style="font-size:18px;color:var(--text-secondary);max-width:540px;font-weight:300;line-height:1.7">
+        Born in Dubai. Built on trust. Dedicated to bringing you the world's best technology at prices that make sense.
+      </p>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <section class="section-sm" style="padding:60px 0">
+    <div class="container">
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-number">50K+</div>
+          <div class="stat-label">Happy Customers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">200+</div>
+          <div class="stat-label">Products Available</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">10+</div>
+          <div class="stat-label">Years in Dubai</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">4.9★</div>
+          <div class="stat-label">Customer Rating</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section class="section">
+    <div class="container">
+      <div class="story-layout">
+        <div class="story-img-stack">
+          <img class="story-img-main" src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&q=80" alt="Our Store">
+          <img class="story-img-sub" src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&q=80" alt="Team">
+          <div class="story-year-badge">
+            <div class="yr">2014</div>
+            <div class="yl">Est.</div>
+          </div>
+        </div>
+        <div class="story-text">
+          <div class="section-eyebrow">Our History</div>
+          <h2>A Decade of<br>Tech Excellence</h2>
+          <p>TechMart started in 2014 as a small electronics kiosk in Dubai Mall with a simple mission: give UAE residents access to genuine, premium technology without the hassle or inflated prices.</p>
+          <p>Today, we've grown into one of Dubai's most trusted tech retailers — online and offline — serving over 50,000 customers with the same passion for quality and authenticity that started us.</p>
+          <p>Every product we sell is 100% genuine, sourced directly from authorized distributors, and backed by official warranties. No grey market. No compromises.</p>
+          <div class="story-highlights">
+            <div class="story-highlight"><div class="sh-dot"></div>Official Authorized Dealer</div>
+            <div class="story-highlight"><div class="sh-dot"></div>UAE-based Customer Support</div>
+            <div class="story-highlight"><div class="sh-dot"></div>Same-Day Delivery in Dubai</div>
+            <div class="story-highlight"><div class="sh-dot"></div>Expert Technical Advice</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISSION / VALUES -->
+  <div class="mission-section">
+    <div class="mission-inner" style="max-width:1400px;margin:0 auto">
+      <div class="mission-item">
+        <div class="mission-icon">🎯</div>
+        <div class="mission-title">Our Mission</div>
+        <p class="mission-text">To make premium technology accessible to everyone in the UAE. We believe great tech should be available without compromise — on price, quality, or authenticity.</p>
+      </div>
+      <div class="mission-item">
+        <div class="mission-icon">👁</div>
+        <div class="mission-title">Our Vision</div>
+        <p class="mission-text">To be the most trusted technology destination in the Gulf — where customers return again and again because they know they'll always get the real deal, the best advice, and the fairest price.</p>
+      </div>
+      <div class="mission-item">
+        <div class="mission-icon">💎</div>
+        <div class="mission-title">Our Values</div>
+        <p class="mission-text">Authenticity above all. Transparency in pricing. Respect for our customers' intelligence. We don't push products — we help you find exactly what you need.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- VALUES CARDS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-header-text">
+          <div class="section-eyebrow">Why Us</div>
+          <h2 class="section-title">What Sets Us <span class="dim">Apart</span></h2>
+        </div>
+      </div>
+      <div class="value-cards">
+        <div class="value-card">
+          <div class="value-icon">🔒</div>
+          <div class="value-title">Guaranteed Genuine</div>
+          <p class="value-desc">Every single product is sourced from authorized distributors. We carry original manufacturer warranties on all items — no exceptions, no excuses.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🧠</div>
+          <div class="value-title">Expert Guidance</div>
+          <p class="value-desc">Our team of tech specialists doesn't just sell — they advise. Whether you need a laptop for work or a TV for your living room, we find the perfect match for your needs and budget.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">⚡</div>
+          <div class="value-title">Lightning Fast Service</div>
+          <p class="value-desc">Order before 2PM and get same-day delivery across Dubai. Express shipping to all other emirates. We respect your time as much as you do.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🤝</div>
+          <div class="value-title">After-Sales Support</div>
+          <p class="value-desc">Our relationship doesn't end at checkout. 30-day returns, warranty support, and a dedicated after-sales team available 7 days a week to assist you.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">💰</div>
+          <div class="value-title">Best Price Promise</div>
+          <p class="value-desc">We monitor prices daily. If you find a lower price for the same product at another authorized UAE retailer, we'll match it — guaranteed.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🌍</div>
+          <div class="value-title">Community First</div>
+          <p class="value-desc">We're proud to serve the diverse UAE community. Multilingual support, inclusive service, and a store that reflects the international spirit of Dubai.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="section" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start">
+        <div>
+          <div class="section-eyebrow">Journey</div>
+          <h2 class="section-title" style="margin-bottom:50px">Our <span class="dim">Milestones</span></h2>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-year">2014</div>
+              <div class="timeline-title">Founded in Dubai</div>
+              <p class="timeline-desc">TechMart opens its first kiosk in Dubai Mall, focusing on mobile phones and accessories with a team of just 5.</p>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-year">2016</div>
+              <div class="timeline-title">First Full Store</div>
+              <p class="timeline-desc">Expanded to a flagship retail store in Mall of the Emirates. Started carrying laptops and smart TVs.</p>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-year">2018</div>
+              <div class="timeline-title">10,000 Customers</div>
+              <p class="timeline-desc">Hit a major milestone — 10,000 satisfied customers and launched our online store for UAE-wide delivery.</p>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-year">2022</div>
+              <div class="timeline-title">Authorized Apple Partner</div>
+              <p class="timeline-desc">Achieved authorized dealer status with Apple, Samsung, Sony, and LG — cementing our reputation for genuine products.</p>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div class="timeline-year">2025</div>
+              <div class="timeline-title">50K+ Customers</div>
+              <p class="timeline-desc">Over 50,000 customers served. Launched same-day delivery, 0% installments, and this brand-new website.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=700&q=80" alt="Journey" style="width:100%;border-radius:20px;object-fit:cover;height:600px">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="section" id="team">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-header-text">
+          <div class="section-eyebrow">People</div>
+          <h2 class="section-title">Meet the <span class="dim">Team</span></h2>
+        </div>
+      </div>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="team-img-wrap">
+            <img class="team-img" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80" alt="CEO">
+            <div class="team-img-overlay"></div>
+          </div>
+          <div class="team-body">
+            <div class="team-name">Khaled Al Farsi</div>
+            <div class="team-role">CEO & Founder</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-img-wrap">
+            <img class="team-img" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80" alt="COO">
+            <div class="team-img-overlay"></div>
+          </div>
+          <div class="team-body">
+            <div class="team-name">Priya Sharma</div>
+            <div class="team-role">Chief Operations</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-img-wrap">
+            <img class="team-img" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80" alt="CTO">
+            <div class="team-img-overlay"></div>
+          </div>
+          <div class="team-body">
+            <div class="team-name">James Chen</div>
+            <div class="team-role">Head of Technology</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-img-wrap">
+            <img class="team-img" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80" alt="Marketing">
+            <div class="team-img-overlay"></div>
+          </div>
+          <div class="team-body">
+            <div class="team-name">Lara Mansouri</div>
+            <div class="team-role">Head of Marketing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" style="padding-top:0">
+    <div class="container">
+      <div class="about-cta">
+        <h2>Ready to Upgrade<br>Your Tech?</h2>
+        <p>Browse over 200 genuine products with free delivery across the UAE.</p>
+        <div class="btns">
+          <a href="products.html?cat=all" class="btn-primary" style="font-size:16px;padding:15px 36px">Shop Now →</a>
+          <a href="products.html?cat=phones" class="btn-ghost" style="font-size:15px;padding:14px 28px">View Phones</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="foot-wrap"></div>
+
+  <script src="data.js"></script>
+  <script>
+    document.getElementById('nav-wrap').innerHTML = renderNav('about');
+    document.getElementById('foot-wrap').innerHTML = renderFooter();
+  </script>
+</body>
+</html>
